@@ -99,3 +99,22 @@ Pruebas locales del parser:
 ```bash
 python -m unittest discover -s tests -v
 ```
+
+
+### Diagnóstico de una licitación mediante API oficial (sin archivos)
+
+Esta prueba consulta **una sola licitación** en la API pública v1 utilizando un ticket válido de ChileCompra. No descarga anexos, no escribe JSON en disco y no actualiza Google Sheets.
+
+Desde la raíz del repositorio:
+
+```bash
+python -m scripts.diagnostico_api
+```
+
+El código de prueba predeterminado es `1111089-6-LP26`. Si quieres otro, ejecuta `python -m scripts.diagnostico_api --codigo CODIGO`.
+
+Cuando aparezca `Ticket API de ChileCompra (oculto, no se guarda)`, ingresa tu ticket personal. No se mostrará en pantalla, ni en errores, ni se guardará en Git. También puedes configurarlo localmente mediante la variable de entorno `MERCADO_PUBLICO_TICKET`.
+
+Si todavía no tienes ticket, solicítalo en https://www.chilecompra.cl/api/ (la documentación indica que se entrega uno por persona). No compartas el ticket en chats o capturas.
+
+Se muestran campos descriptivos, productos o servicios, nombres de las rutas del JSON y posibles campos relacionados con documentos, pero no se descargan archivos. Una respuesta HTTP 200 solo es válida si el contenido también es JSON y contiene `Listado`.
