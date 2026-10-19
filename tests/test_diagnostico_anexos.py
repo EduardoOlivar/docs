@@ -19,9 +19,17 @@ class AttachmentDiagnosticsTests(unittest.TestCase):
         self.assertIsNone(parse_attachments("<html><body>Sin anexos</body></html>"))
 
     def test_validate_url(self):
-        self.assertTrue(validate_url("https://www.mercadopublico.cl/Procurement/Modules/Attachment/ViewAttachmentLC.aspx?enc=ABC"))
+        self.assertTrue(validate_url("https://www.mercadopublico.cl/Procurement/Modules/Attachment/ViewAttachment.aspx?enc=ABC"))
         with self.assertRaises(ValueError):
-            validate_url("https://example.org/Procurement/Modules/Attachment/ViewAttachmentLC.aspx?enc=ABC")
+            validate_url("https://example.org/Procurement/Modules/Attachment/ViewAttachment.aspx?enc=ABC")
+
+    def test_reject_lc_url(self):
+        with self.assertRaises(ValueError):
+            validate_url("https://www.mercadopublico.cl/Procurement/Modules/Attachment/ViewAttachmentLC.aspx?enc=ABC")
+
+    def test_reject_url_without_enc(self):
+        with self.assertRaises(ValueError):
+            validate_url("https://www.mercadopublico.cl/Procurement/Modules/Attachment/ViewAttachment.aspx")
 
 
 if __name__ == "__main__":
