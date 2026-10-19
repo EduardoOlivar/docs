@@ -1,0 +1,61 @@
+{
+  "modernizacion": [
+    "modernización",
+    "modernizacion",
+    "actualización tecnológica",
+    "actualizacion tecnologica",
+    "sistema legado",
+    "sistemas legados",
+    "refactorización",
+    "renovación tecnológica",
+    "obsolescencia tecnológica"
+  ],
+  "migracion": [
+    "migración",
+    "migracion",
+    "migrar",
+    "traspaso de datos"
+  ],
+  "digitalizacion": [
+    "digitalización",
+    "digitalizacion",
+    "digitalizar",
+    "automatización",
+    "automatizacion",
+    "gestión documental"
+  ],
+  "integracion": [
+    "integración",
+    "integracion",
+    "interoperabilidad",
+    "api",
+    "servicios web",
+    "web services"
+  ],
+  "mantenimiento": [
+    "mantenimiento de software",
+    "mantención de software",
+    "mantenimiento evolutivo",
+    "mantenimiento correctivo",
+    "mantención de sistemas",
+    "soporte de aplicaciones"
+  ],
+  "desarrollo": [
+    "desarrollo de software",
+    "desarrollo de sistema",
+    "desarrollo de plataforma",
+    "aplicación web",
+    "portal web",
+    "sitio web",
+    "software a medida"
+  ],
+  "datos_reportes": [
+    "base de datos",
+    "bases de datos",
+    "dashboard",
+    "business intelligence",
+    "tablero de control",
+    "reportería",
+    "indicadores de gestión"
+  ]
+}
