@@ -81,3 +81,21 @@ Si los encabezados existentes son distintos, la sincronización falla sin altera
 - Los enlaces no incluidos en la API se dejan vacíos.
 - No se descargan bases ni se rellena artificialmente información no verificada.
 - El histórico JSON y su descripción son **públicos**. No incluyas datos privados.
+
+### Diagnóstico público de anexos (sin descargas)
+
+Para investigar la página de anexos de una licitación, abre en tu navegador la ventana **Ver anexos** y copia su URL completa. Luego, desde la raíz del repositorio, ejecuta:
+
+```bash
+python -m scripts.diagnostico_anexos
+```
+
+Pega la URL cuando el script lo solicite. No necesitas configurar el ticket de ChileCompra para esta comprobación. El programa realiza **una sola solicitud HTTP GET** a la página `ViewAttachmentLC.aspx?enc=...`, valida la respuesta HTML y muestra los metadatos de la tabla, así como los atributos `href`/`onclick` de los botones Ver.
+
+**No ejecuta acciones de los botones, no visita los archivos y no guarda contenido en disco.** No se automatiza ni elude el CAPTCHA. Si la tabla no se reconoce, informa el fallo sin intentar otros endpoints. La URL de prueba no se guarda en el código público.
+
+Pruebas locales del parser:
+
+```bash
+python -m unittest discover -s tests -v
+```
