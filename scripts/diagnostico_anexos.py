@@ -8,7 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 
 HOSTS = {"www.mercadopublico.cl", "mercadopublico.cl"}
-PATH = "/Procurement/Modules/Attachment/ViewAttachmentLC.aspx"
+PATH = "/Procurement/Modules/Attachment/ViewAttachment.aspx"
 MAX_HTML_BYTES = 4 * 1024 * 1024
 
 
@@ -24,7 +24,7 @@ def clean_text(tag):
 def validate_url(url):
     parsed = urlsplit(url)
     if parsed.scheme != "https" or parsed.hostname not in HOSTS or parsed.path.lower() != PATH.lower():
-        raise ValueError("Se requiere una URL HTTPS del visor ViewAttachmentLC.aspx de Mercado Público.")
+        raise ValueError("Se requiere una URL HTTPS de ViewAttachment.aspx obtenida del botón Ver adjuntos (no ViewAttachmentLC.aspx).")
     if not parse_qs(parsed.query).get("enc"):
         raise ValueError("La URL debe incluir el parámetro enc de la ficha de anexos.")
     return url
@@ -88,8 +88,12 @@ def fetch_html(url):
     ) as response:
         print(f"HTTP: {response.status_code}")
         print(f"Content-Type: {response.headers.get('Content-Type', 'sin cabecera')}")
+        if response.status_code in (301, 302, 303, 307, 308):
+            destination = urlsplit(response.headers.get("Location", "")).path or "(sin ruta)"
+            print(f"Redirección detectada hacia: {destination}")
+            raise RuntimeError("El servidor solicitó redirigir; se detiene la prueba sin seguirla.")
         if response.status_code != 200:
-            raise RuntimeError("El visor no respondió HTTP 200; no se seguirá ninguna redirección.")
+            raise RuntimeError(f"El visor devolvió HTTP {response.status_code}; se detiene la prueba.")
         if "text/html" not in response.headers.get("Content-Type", "").lower():
             raise RuntimeError("La respuesta no es HTML; no se descargará contenido binario.")
         chunks, size = [], 0
@@ -104,9 +108,9 @@ def fetch_html(url):
 
 def main():
     parser = argparse.ArgumentParser(description="Inspecciona el HTML público de anexos sin descargar archivos.")
-    parser.add_argument("--url", help="URL completa del visor ViewAttachmentLC.aspx?enc=...")
+    parser.add_argument("--url", help="URL original ViewAttachment.aspx?enc=... del botón Ver adjuntos")
     args = parser.parse_args()
-    url = args.url or input("Pega la URL completa de 'Ver anexos': ").strip()
+    url = args.url or input("Pega la URL original ViewAttachment.aspx del botón (con enc): ").strip()
     try:
         html = fetch_html(url)
         items = parse_attachments(html)
@@ -124,7 +128,10 @@ def main():
             print(f"  Atributos de acción: {item['acciones'] or '(sin href/onclick/formaction visibles)'}")
         print("\nNo se visitó ningún enlace individual ni se descargaron anexos.")
         return 0
-    except (ValueError, requests.RequestException, RuntimeError) as exc:
+    except requests.RequestException:
+        print("Diagnóstico fallido: error de conexión HTTP. No se muestran URLs ni parámetros de la petición.")
+        return 1
+    except (ValueError, RuntimeError) as exc:
         print(f"Diagnóstico fallido: {exc}")
         return 1
 
