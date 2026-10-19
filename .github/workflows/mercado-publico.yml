@@ -1,0 +1,60 @@
+name: Actualizar Mercado Publico
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Dias hacia atras para consultar"
+        required: true
+        type: number
+        default: 7
+      max_details:
+        description: "Maximo de licitaciones para consultar en detalle"
+        required: true
+        type: number
+        default: 70
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mercado-publico-master
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+      - name: Ejecutar pruebas
+        run: python -m unittest discover -s tests -v
+      - name: Consultar Mercado Publico
+        env:
+          MERCADO_PUBLICO_TICKET: ${{ secrets.MERCADO_PUBLICO_TICKET }}
+        run: python -m scripts.run --days "${{ inputs.days }}" --max-details "${{ inputs.max_details }}"
+      - name: Guardar JSON en master
+        run: |
+          git add data/licitaciones.json
+          if git diff --cached --quiet; then
+            echo "No hay cambios en los datos."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "data: actualizar licitaciones de Mercado Publico"
+            git push origin HEAD:master
+          fi
+      - name: Actualizar Google Sheets
+        env:
+          GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: python -m scripts.google_sheets
