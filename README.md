@@ -90,7 +90,7 @@ Para investigar la página de anexos de una licitación, abre en tu navegador la
 python -m scripts.diagnostico_anexos
 ```
 
-Pega la URL cuando el script lo solicite. No necesitas configurar el ticket de ChileCompra para esta comprobación. El programa realiza **una sola solicitud HTTP GET** a la página `ViewAttachmentLC.aspx?enc=...`, valida la respuesta HTML y muestra los metadatos de la tabla, así como los atributos `href`/`onclick` de los botones Ver.
+Pega la URL cuando el script lo solicite. No necesitas configurar el ticket de ChileCompra para esta comprobación. Copia la URL **original** `ViewAttachment.aspx?enc=...` desde el atributo `onclick` del botón de la ficha, no la URL `ViewAttachmentLC.aspx` de la ventana emergente. El programa realiza **una sola solicitud HTTP GET**, sin seguir redirecciones. Informa el destino de cualquier redirección sin exponer su parámetro `enc`, y si recibe HTML 200, extrae los metadatos de la tabla y los atributos `href`/`onclick` de los botones Ver.
 
 **No ejecuta acciones de los botones, no visita los archivos y no guarda contenido en disco.** No se automatiza ni elude el CAPTCHA. Si la tabla no se reconoce, informa el fallo sin intentar otros endpoints. La URL de prueba no se guarda en el código público.
 
